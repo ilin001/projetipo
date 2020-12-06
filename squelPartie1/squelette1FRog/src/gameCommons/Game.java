@@ -5,6 +5,8 @@ import java.util.Random;
 
 import graphicalElements.Element;
 import graphicalElements.IFroggerGraphics;
+import util.Case;
+import util.Direction;
 
 public class Game {
 
@@ -16,7 +18,7 @@ public class Game {
 	public final int minSpeedInTimerLoops;
 	public final double defaultDensity;
 
-	// Lien aux objets utilisés
+	// Lien aux objets utilisï¿½s
 	private IEnvironment environment;
 	private IFrog frog;
 	private IFroggerGraphics graphic;
@@ -30,7 +32,7 @@ public class Game {
 	 * @param height
 	 *            hauteur en cases
 	 * @param minSpeedInTimerLoop
-	 *            Vitesse minimale, en nombre de tour de timer avant déplacement
+	 *            Vitesse minimale, en nombre de tour de timer avant dï¿½placement
 	 * @param defaultDensity
 	 *            densite de voiture utilisee par defaut pour les routes
 	 */
@@ -44,7 +46,7 @@ public class Game {
 	}
 
 	/**
-	 * Lie l'objet frog à la partie
+	 * Lie l'objet frog ï¿½ la partie
 	 * 
 	 * @param frog
 	 */
@@ -70,24 +72,57 @@ public class Game {
 	}
 
 	/**
-	 * Teste si la partie est perdue et lance un écran de fin approprié si tel
+	 * Teste si la partie est perdue et lance un ï¿½cran de fin appropriï¿½ si tel
 	 * est le cas
 	 * 
 	 * @return true si le partie est perdue
 	 */
 	public boolean testLose() {
 		// TODO
+		if(environment.isSafe(this.frog.getPosition()) == false ) { // teste si sur la case actuelle la grenouille meurt
+			if(environment.onTrap(this.frog.getPosition()) == false) {
+				this.graphic.endGameScreen("Perdu");                    // si elle meurt, on affiche l'ecran de fin de jeu "perdu"
+				return true;
+			}
+		}
+		return false;
+	}
+	public boolean testGlisse() {
+		// TODO
+
+		if(environment.onGlass(this.frog.getPosition()) == true) { // Changement
+			frog.Glisse(frog.getDirection());
+			return true;
+		}
+
+		return false;
+	}
+	public boolean testBloque() {
+		// TODO
+
+		if(environment.onWall(this.frog.getPosition()) == true) { // Changement
+			frog.Bloque(frog.getDirection());
+			return true;
+		}
+
 		return false;
 	}
 
+
+
+
 	/**
-	 * Teste si la partie est gagnee et lance un écran de fin approprié si tel
+	 * Teste si la partie est gagnee et lance un ï¿½cran de fin appropriï¿½ si tel
 	 * est le cas
 	 * 
-	 * @return true si la partie est gagnée
+	 * @return true si la partie est gagnï¿½e
 	 */
 	public boolean testWin() {
 		// TODO
+		if(environment.isWinningPosition(this.frog.getPosition()) == true ) { // teste si la case actuelle est la case d'arrivee
+			this.graphic.endGameScreen("Victoire");							  // si elle l'est, on affiche l'ecran de fin de jeu "victoire"
+			return true;
+		}
 		return false;
 	}
 
@@ -98,6 +133,8 @@ public class Game {
 	public void update() {
 		graphic.clear();
 		environment.update();
+		testGlisse(); // Changement
+		testBloque(); // Changement
 		this.graphic.add(new Element(frog.getPosition(), Color.GREEN));
 		testLose();
 		testWin();
